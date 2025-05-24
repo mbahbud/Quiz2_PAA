@@ -80,6 +80,14 @@ dijkstra_button = RectButton(
     rectcolor=colors["yellow"],  # Default to yellow as in the second image
     screen=screen, font=RectButtonFont)
 
+asearch_button = RectButton(
+    left=algo_button_x, top=PADDING + algo_button_height + PADDING,
+    width=algo_button_width, height=algo_button_height,
+    text="A*", textcolor=colors["white"],
+    rectcolor=colors["gray"],
+    screen=screen, font=RectButtonFont)
+
+
 SEARCH = False
 DRAW = False
 ERASE = False
@@ -107,6 +115,8 @@ while True:
 
         # call algorithm buttons
         dijkstra_button()
+        asearch_button()
+        
         # if Reset button is pressed, change color back to white and set flag to False
         if RESET == True:
             time.sleep(0.05)
@@ -210,6 +220,14 @@ while True:
             if dijkstra_button.rect.collidepoint(mouse):
                 ALGO = "Dijkstra"
                 dijkstra_button.color_change(colors["yellow"])
+                asearch_button.color_change(colors["gray"])
+                time.sleep(0.1)
+
+            # button for A_search
+            elif asearch_button.rect.collidepoint(mouse):
+                ALGO = "A_search"
+                asearch_button.color_change(colors["yellow"])
+                dijkstra_button.color_change(colors["gray"])
                 time.sleep(0.1)
 
             # drawing or erasing wall by checking corresponding flag and position of mouse
@@ -271,6 +289,12 @@ while True:
             algorithm = Dijkstra(board)
             algorithm.initialize()
             algorithm.solver()
+
+        elif ALGO == "A_search":
+            algorithm = A_search(board)
+            algorithm.initialize()
+            algorithm.solver()
+
         
 
         # if find shortest path, draw the path. if not, show "No Solution Found"
