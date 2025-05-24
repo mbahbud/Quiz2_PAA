@@ -145,7 +145,6 @@ class Dijkstra(Search):
                     self.relax(node, neighbor)
             pygame.display.flip()
 
-
 class A_search(Search):
     """
     A* Search algorithm
@@ -256,5 +255,129 @@ class A_search(Search):
             for neighbor in self.adj_list[node]:
                 if neighbor not in self.board.visited:
                     self.relax(node, neighbor)
+
+            pygame.display.flip()
+
+class BFS(Search):
+    """
+    Breathe First Search algorithm
+    """
+    def __init__(self, board:Board):
+        self.board = board
+        self.find = False
+    
+    def initialize(self):
+        """
+        Create following information for solver:
+        node_dict: key is coordinate of node; value is node
+        """
+        self.node_dict = {}
+        for i in range(self.board.v_cells):
+            for j in range(self.board.h_cells):
+                if (i,j) in self.board.wall:
+                    continue
+
+                pos = (i,j)
+                node = Node(pos, None, None)
+                if pos == self.board.start:
+                    self.start_node = node
+                elif pos == self.board.target:
+                    self.target_node = node
+                
+                self.node_dict[pos] = node
+
+    def solver(self):
+        """
+        BFS algorithm
+        """
+        self.queue = Queue()
+        self.queue.add(self.start_node)
+        self.queue.frontier.add(self.start_node.state)
+
+        while not self.queue.empty() and not self.find:
+            
+            time.sleep(DELAY)
+            node = self.queue.remove()
+            self.board.visited.add(node)
+            self.board.draw_board(return_cells=False)
+
+            neighbors = self.board.neighbors(node.state)
+            for action, (row, col) in neighbors:
+                # if find target node, stop loop
+                if (row, col) == self.target_node.state:
+                    self.target_node.parent = node
+                    self.target_node.action = action
+                    self.find = True
+                    break
+                
+                # if node is not visited and not in frontier, add node to queue
+                if (row, col) not in self.queue.frontier and \
+                   self.node_dict[(row, col)] not in self.board.visited:
+
+                    neighbor = self.node_dict[(row, col)]
+                    neighbor.parent = node
+                    neighbor.action = action
+                    self.queue.add(neighbor)
+                    self.queue.frontier.add((row, col))
+
+            pygame.display.flip()
+
+class DFS(Search):
+    """
+    Depth First Search algorithm
+    """
+    def __init__(self, board: Board):
+        self.board = board
+        self.find = False
+
+    def initialize(self):
+        """
+        Create following information for solver:
+        node_dict: key is coordinate of node; value is node
+        """
+        self.node_dict = {}
+        for i in range(self.board.v_cells):
+            for j in range(self.board.h_cells):
+                if (i, j) in self.board.wall:
+                    continue
+
+                pos = (i, j)
+                node = Node(pos, None, None)
+                if pos == self.board.start:
+                    self.start_node = node
+                elif pos == self.board.target:
+                    self.target_node = node
+
+                self.node_dict[pos] = node
+
+    def solver(self):
+        """
+        DFS algorithm (using stack)
+        """
+        stack = []
+        stack.append(self.start_node)
+        visited_set = set()
+        visited_set.add(self.start_node.state)
+
+        while stack and not self.find:
+            time.sleep(DELAY)
+            node = stack.pop()
+            self.board.visited.add(node)
+            self.board.draw_board(return_cells=False)
+
+            neighbors = self.board.neighbors(node.state)
+            for action, (row, col) in neighbors:
+                if (row, col) == self.target_node.state:
+                    self.target_node.parent = node
+                    self.target_node.action = action
+                    self.find = True
+                    break
+
+                if (row, col) not in visited_set and self.node_dict[(row, col)] not in self.board.visited:
+                    neighbor = self.node_dict[(row, col)]
+                    neighbor.parent = node
+                    neighbor.action = action
+                    stack.append(neighbor)
+                    visited_set.add((row, col))
 
             pygame.display.flip()

@@ -80,13 +80,26 @@ dijkstra_button = RectButton(
     rectcolor=colors["yellow"],  # Default to yellow as in the second image
     screen=screen, font=RectButtonFont)
 
-asearch_button = RectButton(
+bfs_button = RectButton(
     left=algo_button_x, top=PADDING + algo_button_height + PADDING,
+    width=algo_button_width, height=algo_button_height,
+    text="BFS", textcolor=colors["white"],
+    rectcolor=colors["gray"],
+    screen=screen, font=RectButtonFont)
+
+asearch_button = RectButton(
+    left=algo_button_x, top=PADDING + 2*(algo_button_height + PADDING),
     width=algo_button_width, height=algo_button_height,
     text="A*", textcolor=colors["white"],
     rectcolor=colors["gray"],
     screen=screen, font=RectButtonFont)
 
+dfs_button = RectButton(
+    left=algo_button_x, top=PADDING + 3*(algo_button_height + PADDING),
+    width=algo_button_width, height=algo_button_height,
+    text="DFS", textcolor=colors["white"],
+    rectcolor=colors["gray"],
+    screen=screen, font=RectButtonFont)
 
 SEARCH = False
 DRAW = False
@@ -115,7 +128,9 @@ while True:
 
         # call algorithm buttons
         dijkstra_button()
+        bfs_button()
         asearch_button()
+        dfs_button()
         
         # if Reset button is pressed, change color back to white and set flag to False
         if RESET == True:
@@ -220,7 +235,18 @@ while True:
             if dijkstra_button.rect.collidepoint(mouse):
                 ALGO = "Dijkstra"
                 dijkstra_button.color_change(colors["yellow"])
+                bfs_button.color_change(colors["gray"])
                 asearch_button.color_change(colors["gray"])
+                dfs_button.color_change(colors["gray"])
+                time.sleep(0.1)
+
+            # button for BFS
+            elif bfs_button.rect.collidepoint(mouse):
+                ALGO = "BFS"
+                bfs_button.color_change(colors["yellow"])
+                dijkstra_button.color_change(colors["gray"])
+                asearch_button.color_change(colors["gray"])
+                dfs_button.color_change(colors["gray"])
                 time.sleep(0.1)
 
             # button for A_search
@@ -228,6 +254,17 @@ while True:
                 ALGO = "A_search"
                 asearch_button.color_change(colors["yellow"])
                 dijkstra_button.color_change(colors["gray"])
+                bfs_button.color_change(colors["gray"])
+                dfs_button.color_change(colors["gray"])
+                time.sleep(0.1)
+
+            # button for DFS
+            elif dfs_button.rect.collidepoint(mouse):
+                ALGO = "DFS"
+                dfs_button.color_change(colors["yellow"])
+                dijkstra_button.color_change(colors["gray"])
+                bfs_button.color_change(colors["gray"])
+                asearch_button.color_change(colors["gray"])
                 time.sleep(0.1)
 
             # drawing or erasing wall by checking corresponding flag and position of mouse
@@ -289,13 +326,21 @@ while True:
             algorithm = Dijkstra(board)
             algorithm.initialize()
             algorithm.solver()
-
+        
+        elif ALGO == "BFS":
+            algorithm = BFS(board)
+            algorithm.initialize()
+            algorithm.solver()           
+        
         elif ALGO == "A_search":
             algorithm = A_search(board)
             algorithm.initialize()
             algorithm.solver()
 
-        
+        elif ALGO == "DFS":
+            algorithm = DFS(board)
+            algorithm.initialize()
+            algorithm.solver()
 
         # if find shortest path, draw the path. if not, show "No Solution Found"
         if algorithm.find == True:
